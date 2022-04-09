@@ -3,7 +3,7 @@
 ~~Crude and hastily written~~ *Simple* Arduino library for YX5300/HW-311 Serial MP3 Player.
 
 ## *"documentation"*
-In `setup()` create player object: 
+Create player object: 
 `player mp3 = player(TX, RX);`
 
 And initialize it: 
