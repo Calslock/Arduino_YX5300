@@ -21,7 +21,7 @@ class player{
     
     private:
         void command(uint8_t command, uint8_t parameter1, uint8_t parameter2);
-	SoftwareSerial* serialPlayer;
+        SoftwareSerial* serialPlayer;
 };
 
 #endif
