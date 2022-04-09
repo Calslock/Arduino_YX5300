@@ -1,6 +1,9 @@
 #ifndef YX5300_H
 #define YX5300_H
 
+#include <Arduino.h>
+#include <SoftwareSerial.h>
+
 class player{
     public:
         player(int tx_pin, int rx_pin);
@@ -17,8 +20,8 @@ class player{
         void next();
     
     private:
-        void command(int8_t command, int8_t parameter1, int8_t parameter2);
-        SoftwareSerial serializer;
+        void command(uint8_t command, uint8_t parameter1, uint8_t parameter2);
+	SoftwareSerial* serialPlayer;
 };
 
 #endif

@@ -1,23 +1,24 @@
-#include "yx5300.hh"
+#include "yx5300.h"
 #include <Arduino.h>
 #include <SoftwareSerial.h>
 
 player::player(int tx_pin, int rx_pin){
-    serializer = SoftwareSerial(tx_pin, rx_pin);
+    serialPlayer = new SoftwareSerial(tx_pin, rx_pin, false);
 }
 
-void player::command(int8_t command, int8_t parameter1, int8_t parameter2){
+void player::command(uint8_t command, uint8_t parameter1, uint8_t parameter2){
     delay(20);
 
-    cmdbuf[8] = {
+    uint8_t cmdbuf[8] = {
         0x7e, 0xff, 0x06, command, 0x00, parameter1, parameter2, 0xef
     };
     for (int i = 0; i < 8; i++){
-        serializer.write(cmdbuf[i]);
+        serialPlayer->write(cmdbuf[i]);
     }
 }
 
 void player::init(){
+    serialPlayer->begin(9600);
     delay(500);
     command(0x09, 0x00, 0x02);
     delay(200);
