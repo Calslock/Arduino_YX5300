@@ -6,11 +6,18 @@ player::player(int tx_pin, int rx_pin){
     serialPlayer = new SoftwareSerial(tx_pin, rx_pin, false);
 }
 
-void player::command(uint8_t command, uint8_t parameter1, uint8_t parameter2){
+void player::command(uint8_t command, uint8_t parameter1=0x00, uint8_t parameter2=0x00, bool feedback=false){
     delay(20);
 
     uint8_t cmdbuf[8] = {
-        0x7e, 0xff, 0x06, command, 0x00, parameter1, parameter2, 0xef
+        0x7e,       //command start
+        0xff,       //version
+        0x06,       //command length
+        command, 
+        feedback ? (uint8_t)0x00 : (uint8_t)0x01, 
+        parameter1, 
+        parameter2, 
+        0xef        //ending
     };
     for (int i = 0; i < 8; i++){
         serialPlayer->write(cmdbuf[i]);
@@ -24,7 +31,7 @@ void player::init(){
     delay(200);
 }
 
-void player::play(int8_t folder, int8_t file_prefix){
+void player::playFilename(int8_t folder, int8_t file_prefix){
     command(0x0F, folder, file_prefix);
 }
 
@@ -37,29 +44,29 @@ void player::setVolume(int8_t volume){
 }
 
 void player::increaseVolume(){
-    command(0x04, 0x00, 0x00);
+    command(0x04);
 }
 
 void player::decreaseVolume(){
-    command(0x05, 0x00, 0x00);
+    command(0x05);
 }
 
 void player::pause(){
-    command(0x0e, 0x00, 0x00);
+    command(0x0e);
 }
 
 void player::resume(){
-    command(0x0d, 0x00, 0x00);
+    command(0x0d);
 }
 
 void player::stop(){
-    command(0x16, 0x00, 0x00);
+    command(0x16);
 }
 
 void player::prev(){
-    command(0x02, 0x00, 0x00);
+    command(0x02);
 }
 
 void player::next(){
-    command(0x01, 0x00, 0x00);
+    command(0x01);
 }

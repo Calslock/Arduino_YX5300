@@ -8,7 +8,7 @@ class player{
     public:
         player(int tx_pin, int rx_pin);
         void init();
-        void play(int8_t folder, int8_t file_prefix);
+        void playFilename(int8_t folder, int8_t file_prefix);
         void playLoop(int8_t folder);
         void setVolume(int8_t volume);
         void increaseVolume();
@@ -20,7 +20,7 @@ class player{
         void next();
     
     private:
-        void command(uint8_t command, uint8_t parameter1, uint8_t parameter2);
+        void command(uint8_t command, uint8_t parameter1, uint8_t parameter2, bool feedback);
         SoftwareSerial* serialPlayer;
 };
 
