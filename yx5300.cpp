@@ -2,11 +2,19 @@
 #include <Arduino.h>
 #include <SoftwareSerial.h>
 
-player::player(int tx_pin, int rx_pin){
+YXPlayer::YXPlayer(int tx_pin, int rx_pin){
     serialPlayer = new SoftwareSerial(tx_pin, rx_pin, false);
+    software = true;
 }
 
-void player::command(uint8_t command, uint8_t parameter1=0x00, uint8_t parameter2=0x00, bool feedback=false){
+YXPlayer::YXPlayer(){
+    software = false;
+}
+
+YXPlayer::~YXPlayer(){}
+
+//send command with all 3 parameters
+void YXPlayer::send(uint8_t command, uint8_t parameter1, uint8_t parameter2, bool feedback=false){
     delay(20);
 
     uint8_t cmdbuf[8] = {
@@ -14,59 +22,109 @@ void player::command(uint8_t command, uint8_t parameter1=0x00, uint8_t parameter
         0xff,       //version
         0x06,       //command length
         command, 
-        feedback ? (uint8_t)0x00 : (uint8_t)0x01, 
+        feedback ? (uint8_t)0x01 : (uint8_t)0x00, 
         parameter1, 
         parameter2, 
         0xef        //ending
     };
-    for (int i = 0; i < 8; i++){
-        serialPlayer->write(cmdbuf[i]);
-    }
+    if(software)
+        for (int i = 0; i < 8; i++){
+            serialPlayer->write(cmdbuf[i]);
+        }
+    else for (int i = 0; i < 8; i++){
+            Serial.write(cmdbuf[i]);
+        }
 }
 
-void player::init(){
-    serialPlayer->begin(9600);
+//send command with less than 3 parameters:
+//if only command given:
+//  send(command, 0x00, 0x00)
+//if parameter given:
+//  send(command, 0x00, parameter)
+void YXPlayer::send(uint8_t command, uint8_t parameter=0x00){
+    send(command, 0x00, parameter);
+}
+
+void YXPlayer::init(){
+    if(software) serialPlayer->begin(9600);
+    else Serial.begin(9600);
     delay(500);
-    command(0x09, 0x00, 0x02);
+    send(SELECTDEV, 0x02);
     delay(200);
 }
 
-void player::playFilename(int8_t folder, int8_t file_prefix){
-    command(0x0F, folder, file_prefix);
+void YXPlayer::play(int8_t file){
+    send(PLAYINDEX, file);
 }
 
-void player::playLoop(int8_t folder){
-    command(0x17, folder, 0x00);
+void YXPlayer::playName(int8_t folder, int8_t file_prefix){
+    send(PLAYNAME, folder, file_prefix);
 }
 
-void player::setVolume(int8_t volume){
-    command(0x06, 0x00, volume);
+void YXPlayer::playLoop(int8_t file){
+    send(PLAYLOOP, file);
 }
 
-void player::increaseVolume(){
-    command(0x04);
+void YXPlayer::playFolderLoop(int8_t folder){
+    send(LOOPFOLDER, folder);
 }
 
-void player::decreaseVolume(){
-    command(0x05);
+void YXPlayer::playWithVolume(int8_t file, int8_t volume){
+    send(PLAYVOLUME, volume, file);
 }
 
-void player::pause(){
-    command(0x0e);
+void YXPlayer::setVolume(int8_t volume){
+    send(VOLUMESET, volume);
 }
 
-void player::resume(){
-    command(0x0d);
+void YXPlayer::incVolume(){
+    send(VOLUMEUP);
 }
 
-void player::stop(){
-    command(0x16);
+void YXPlayer::decVolume(){
+    send(VOLUMEDOWN);
 }
 
-void player::prev(){
-    command(0x02);
+void YXPlayer::pause(){
+    send(PAUSE);
 }
 
-void player::next(){
-    command(0x01);
+void YXPlayer::resume(){
+    send(RESUME);
+}
+
+void YXPlayer::stop(){
+    send(STOP);
+}
+
+void YXPlayer::prev(){
+    send(PREVFILE);
+}
+
+void YXPlayer::next(){
+    send(NEXTFILE);
+}
+
+void YXPlayer::sleep(){
+    send(SLEEP);
+}
+
+void YXPlayer::wake(){
+    send(WAKEUP);
+}
+
+void YXPlayer::reset(){
+    send(RESETDEV);
+}
+
+void YXPlayer::shuffle(){
+    send(SHUFFLE);
+}
+
+void YXPlayer::loop(bool status){
+    send(LOOP, status ? (uint8_t)0x01 : (uint8_t)0x00);
+}
+
+void YXPlayer::dac(bool status){
+    send(DAC, status ? (uint8_t)0x01 : (uint8_t)0x00);
 }
