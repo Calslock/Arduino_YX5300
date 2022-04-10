@@ -1,4 +1,4 @@
-# Arduino YX5300 [![License: GPL v2](https://img.shields.io/badge/License-GPLv2-informational)](https://www.gnu.org/licenses/old-licenses/gpl-2.0.en.html) ![version 0.3](https://img.shields.io/badge/version-0.3-blue)
+# Arduino YX5300 [![License: GPL v2](https://img.shields.io/badge/License-GPLv2--only-informational)](https://www.gnu.org/licenses/old-licenses/gpl-2.0.en.html) ![version 0.3](https://img.shields.io/badge/version-0.3-blue)
 
 ~~Crude and hastily written~~ *Simple* Arduino library for YX5300/HW-311 Serial MP3 Player.
 
